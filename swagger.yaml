@@ -5324,6 +5324,7 @@ paths:
             schema:
               properties:
                 sku_list:
+                  description: Список SKU для обновления
                   items:
                     properties:
                       barcode:
@@ -5355,6 +5356,57 @@ paths:
                           - weight
                           - width
                         type: object
+                      product_attributes:
+                        description: Свойства товара (product_attributes)
+                        items:
+                          type: string
+                        maxItems: 10
+                        type: array
+                      product_description:
+                        description: Описание товара (уровень продукта)
+                        maxLength: 6000
+                        type: string
+                      product_filters_list:
+                        description: Бренд из списка / фильтры уровня продукта (product_filters_list)
+                        items:
+                          description: Характеристики, относящиеся к Продукту
+                          properties:
+                            characteristic_id:
+                              description: Идентификатор справочника
+                              format: int64
+                              type: integer
+                            characteristic_value:
+                              description: Значение характеристики
+                              type: string
+                          required:
+                            - characteristic_id
+                            - characteristic_value
+                          type: object
+                        maxItems: 2147483647
+                        minItems: 1
+                        type: array
+                      product_images:
+                        description: Список URL изображений (уровень продукта)
+                        items:
+                          description: Объект с URL архива.zip с фотографиями внутри в формате .jpg
+                          properties:
+                            url:
+                              description: Конечный URL
+                              type: string
+                          required:
+                            - url
+                          type: object
+                        maxItems: 10
+                        type: array
+                      product_short_description:
+                        description: Краткое описание (уровень продукта)
+                        maxLength: 390
+                        type: string
+                      product_title:
+                        description: Название товара (уровень продукта)
+                        maxLength: 90
+                        minLength: 3
+                        type: string
                       seller_sku_id:
                         description: 'Уникальный идентификатор SKU в системе селлера. Длина: до 80 символов. Допустимые символы: латиница (a-zA-Z), кириллица (а-яА-Я, кроме ёЁ), цифры (0-9), некоторые специальные символы .,\/()[]-=_.'
                         type: string
@@ -5378,10 +5430,27 @@ paths:
                             - characteristic_values
                           type: object
                         type: array
+                      sku_images:
+                        description: Список URL изображений варианта (sku_images)
+                        items:
+                          description: Объект с URL архива.zip с фотографиями внутри в формате .jpg
+                          properties:
+                            url:
+                              description: Конечный URL
+                              type: string
+                          required:
+                            - url
+                          type: object
+                        maxItems: 10
+                        type: array
                     required:
                       - seller_sku_id
                     type: object
+                  maxItems: 1000
+                  minItems: 0
                   type: array
+              required:
+                - sku_list
               type: object
         required: true
       responses:
