@@ -4140,7 +4140,7 @@ paths:
                           type: object
                         type: array
                       product_images:
-                        description: Массив объектов с URL файлов в jpg, png, pdf с фото товаров; может быть несколько фото (до 10 штук)
+                        description: Массив объектов с URL файлов в PNG, JPEG, JPG, WEBP с фото товаров; может быть несколько фото (до 30 штук)
                         items:
                           description: Объект с URL архива.zip с фотографиями внутри в формате .jpg
                           properties:
@@ -4150,7 +4150,7 @@ paths:
                           required:
                             - url
                           type: object
-                        maxItems: 10
+                        maxItems: 30
                         minItems: 1
                         type: array
                       seller_sku_id:
@@ -5386,7 +5386,7 @@ paths:
                         minItems: 1
                         type: array
                       product_images:
-                        description: Список URL изображений (уровень продукта)
+                        description: Список URL изображений (уровень продукта), может быть несколько фото (до 30 штук)
                         items:
                           description: Объект с URL архива.zip с фотографиями внутри в формате .jpg
                           properties:
@@ -5396,7 +5396,7 @@ paths:
                           required:
                             - url
                           type: object
-                        maxItems: 10
+                        maxItems: 30
                         type: array
                       product_short_description:
                         description: Краткое описание (уровень продукта)
@@ -5431,7 +5431,7 @@ paths:
                           type: object
                         type: array
                       sku_images:
-                        description: Список URL изображений варианта (sku_images)
+                        description: Список URL изображений варианта (sku_images), может быть несколько фото (до 30 штук)
                         items:
                           description: Объект с URL архива.zip с фотографиями внутри в формате .jpg
                           properties:
@@ -5441,7 +5441,7 @@ paths:
                           required:
                             - url
                           type: object
-                        maxItems: 10
+                        maxItems: 30
                         type: array
                     required:
                       - seller_sku_id
@@ -5909,6 +5909,491 @@ paths:
       summary: Получение списка магазинов
       tags:
         - Магазины
+  /api/seller/v1/virtual-warehouses:
+    get:
+      description: REST эндпоинт для получения списка виртуальных складов продавца с пагинацией и фильтрацией
+      parameters:
+        - in: query
+          name: searchQuery
+          required: false
+          schema:
+            default: ''
+            type: string
+        - in: query
+          name: size
+          required: false
+          schema:
+            default: 20
+            format: int32
+            type: integer
+        - in: query
+          name: page
+          required: false
+          schema:
+            default: 0
+            format: int32
+            type: integer
+        - in: query
+          name: sortDirection
+          required: false
+          schema:
+            default: ASC
+            type: string
+        - in: query
+          name: statuses
+          required: false
+          schema:
+            items:
+              enum:
+                - CREATION_IN_PROGRESS
+                - ACTIVE
+                - UPDATE_IN_PROGRESS
+                - ARCHIVED
+                - UNKNOWN
+              type: string
+            type: array
+        - in: query
+          name: cutOffTimeZone
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                description: Ответ с пагинацией
+                properties:
+                  items:
+                    description: Список элементов
+                    items:
+                      description: Информация о складе
+                      properties:
+                        address:
+                          description: Адрес склада
+                          example: г. Москва, ул. Ленина, д. 1
+                          type: string
+                        cutOffTime:
+                          description: Время приема заказов до
+                          example: '10:00'
+                          type: string
+                        cutOffTimeZone:
+                          description: Часовой пояс для времени cutOffTime
+                          example: Europe/Moscow
+                          type: string
+                        dailyOrderLimit:
+                          description: Лимит заказов в день
+                          example: 100
+                          format: int32
+                          type: integer
+                        dropOffPoint:
+                          description: Информация о пункте приема
+                          properties:
+                            address:
+                              description: Адрес пункта приема
+                              example: г. Москва, ул. Ленина, д. 1
+                              type: string
+                            name:
+                              description: Название пункта приема
+                              example: Пункт приема №1
+                              type: string
+                            type:
+                              description: Тип пункта приема
+                              example: склад
+                              type: string
+                          type: object
+                        editable:
+                          description: Признак разрешения редактировать склад
+                          type: boolean
+                        id:
+                          description: Идентификатор склада
+                          example: 123e4567-e89b-12d3-a456-426614174000
+                          format: uuid
+                          type: string
+                        name:
+                          description: Название склада
+                          example: Основной склад
+                          type: string
+                        sla:
+                          description: Информация о SLA (Service Level Agreement)
+                          properties:
+                            code:
+                              description: Код SLA
+                              example: STANDARD
+                              type: string
+                            transcription:
+                              description: Описание SLA
+                              example: Стандартная доставка
+                              type: string
+                          required:
+                            - code
+                            - transcription
+                          type: object
+                        status:
+                          description: Статус склада
+                          enum:
+                            - CREATION_IN_PROGRESS
+                            - ACTIVE
+                            - UPDATE_IN_PROGRESS
+                            - ARCHIVED
+                            - UNKNOWN
+                          example: ACTIVE
+                          type: string
+                        workingDays:
+                          description: График работы
+                          items:
+                            type: string
+                          type: array
+                      required:
+                        - address
+                        - cutOffTime
+                        - dailyOrderLimit
+                        - dropOffPoint
+                        - id
+                        - name
+                        - sla
+                        - status
+                        - workingDays
+                      type: object
+                    type: array
+                  pagination:
+                    description: Информация о пагинации
+                    properties:
+                      currentPage:
+                        description: Текущая страница (начиная с 0)
+                        example: 0
+                        format: int32
+                        type: integer
+                      pageSize:
+                        description: Размер страницы
+                        example: 20
+                        format: int32
+                        type: integer
+                      totalItems:
+                        description: Общее количество элементов
+                        example: 100
+                        format: int64
+                        type: integer
+                    type: object
+                type: object
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    example: 'null'
+                    readOnly: true
+                    type: string
+                  errors:
+                    items:
+                      properties:
+                        code:
+                          description: Error code
+                          type: string
+                        detailMessage:
+                          deprecated: true
+                          type: string
+                        message:
+                          description: Error message
+                          type: string
+                        payload:
+                          type: object
+                      required:
+                        - code
+                        - message
+                      type: object
+                    type: array
+                  payload:
+                    description: Response payload
+                    type: object
+                  timestamp:
+                    format: date-time
+                    type: string
+                  trace:
+                    type: string
+                type: object
+          description: Пример ошибочных ответов для всех http-статусов (не 2хх)
+      security:
+        - apiKeyAuth: []
+      summary: Получение списка складов
+      tags:
+        - Категории
+    post:
+      description: REST эндпоинт для создания виртуального склада продавца
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Информация о складе продавца
+              properties:
+                address:
+                  description: Адрес склада
+                  example: г. Москва, ул. Ленина, д. 1
+                  type: string
+                contactPhone:
+                  description: Контактный телефон
+                  example: '+79459991213'
+                  type: string
+                createdAt:
+                  description: Дата и время создания склада
+                  format: date-time
+                  type: string
+                cutOffTime:
+                  description: Время окончания приема заказов
+                  example: '10:00'
+                  type: string
+                cutOffTimeZone:
+                  description: Часовой пояс для времени cutOffTime
+                  example: Europe/Moscow
+                  type: string
+                dropOffPointId:
+                  description: Идентификатор пункта приема
+                  example: 123e4567-e89b-12d3-a456-426614174001
+                  format: uuid
+                  type: string
+                editable:
+                  description: Признак разрешения редактировать склад
+                  type: boolean
+                id:
+                  description: Уникальный идентификатор склада
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  format: uuid
+                  type: string
+                name:
+                  description: Название склада
+                  example: Основной склад
+                  type: string
+                ordersPerDayLimit:
+                  description: Лимит заказов в день
+                  example: 100
+                  format: int32
+                  type: integer
+                sellerId:
+                  description: Идентификатор продавца
+                  example: 12345
+                  format: int64
+                  type: integer
+                sla:
+                  description: Информация о SLA (Service Level Agreement)
+                  properties:
+                    code:
+                      description: Код SLA
+                      example: STANDARD
+                      type: string
+                    transcription:
+                      description: Описание SLA
+                      example: Стандартная доставка
+                      type: string
+                  required:
+                    - code
+                    - transcription
+                  type: object
+                status:
+                  description: Статус склада
+                  enum:
+                    - CREATION_IN_PROGRESS
+                    - ACTIVE
+                    - UPDATE_IN_PROGRESS
+                    - ARCHIVED
+                    - UNKNOWN
+                  example: ACTIVE
+                  type: string
+                validFrom:
+                  description: Дата вступления в силу условий доставки (RFC3339)
+                  example: '2025-01-25T00:00:00+03:00'
+                  format: date-time
+                  type: string
+                workingDays:
+                  description: Рабочие дни склада
+                  example:
+                    - MONDAY
+                    - TUESDAY
+                    - WEDNESDAY
+                    - THURSDAY
+                    - FRIDAY
+                  items:
+                    enum:
+                      - MONDAY
+                      - TUESDAY
+                      - WEDNESDAY
+                      - THURSDAY
+                      - FRIDAY
+                      - SATURDAY
+                      - SUNDAY
+                    type: string
+                  type: array
+                  uniqueItems: true
+              required:
+                - address
+                - contactPhone
+                - cutOffTime
+                - dropOffPointId
+                - name
+                - ordersPerDayLimit
+                - sla
+                - workingDays
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                description: Информация о складе продавца
+                properties:
+                  address:
+                    description: Адрес склада
+                    example: г. Москва, ул. Ленина, д. 1
+                    type: string
+                  contactPhone:
+                    description: Контактный телефон
+                    example: '+79459991213'
+                    type: string
+                  createdAt:
+                    description: Дата и время создания склада
+                    format: date-time
+                    type: string
+                  cutOffTime:
+                    description: Время окончания приема заказов
+                    example: '10:00'
+                    type: string
+                  cutOffTimeZone:
+                    description: Часовой пояс для времени cutOffTime
+                    example: Europe/Moscow
+                    type: string
+                  dropOffPointId:
+                    description: Идентификатор пункта приема
+                    example: 123e4567-e89b-12d3-a456-426614174001
+                    format: uuid
+                    type: string
+                  editable:
+                    description: Признак разрешения редактировать склад
+                    type: boolean
+                  id:
+                    description: Уникальный идентификатор склада
+                    example: 123e4567-e89b-12d3-a456-426614174000
+                    format: uuid
+                    type: string
+                  name:
+                    description: Название склада
+                    example: Основной склад
+                    type: string
+                  ordersPerDayLimit:
+                    description: Лимит заказов в день
+                    example: 100
+                    format: int32
+                    type: integer
+                  sellerId:
+                    description: Идентификатор продавца
+                    example: 12345
+                    format: int64
+                    type: integer
+                  sla:
+                    description: Информация о SLA (Service Level Agreement)
+                    properties:
+                      code:
+                        description: Код SLA
+                        example: STANDARD
+                        type: string
+                      transcription:
+                        description: Описание SLA
+                        example: Стандартная доставка
+                        type: string
+                    required:
+                      - code
+                      - transcription
+                    type: object
+                  status:
+                    description: Статус склада
+                    enum:
+                      - CREATION_IN_PROGRESS
+                      - ACTIVE
+                      - UPDATE_IN_PROGRESS
+                      - ARCHIVED
+                      - UNKNOWN
+                    example: ACTIVE
+                    type: string
+                  validFrom:
+                    description: Дата вступления в силу условий доставки (RFC3339)
+                    example: '2025-01-25T00:00:00+03:00'
+                    format: date-time
+                    type: string
+                  workingDays:
+                    description: Рабочие дни склада
+                    example:
+                      - MONDAY
+                      - TUESDAY
+                      - WEDNESDAY
+                      - THURSDAY
+                      - FRIDAY
+                    items:
+                      enum:
+                        - MONDAY
+                        - TUESDAY
+                        - WEDNESDAY
+                        - THURSDAY
+                        - FRIDAY
+                        - SATURDAY
+                        - SUNDAY
+                      type: string
+                    type: array
+                    uniqueItems: true
+                required:
+                  - address
+                  - contactPhone
+                  - cutOffTime
+                  - dropOffPointId
+                  - name
+                  - ordersPerDayLimit
+                  - sla
+                  - workingDays
+                type: object
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    example: 'null'
+                    readOnly: true
+                    type: string
+                  errors:
+                    items:
+                      properties:
+                        code:
+                          description: Error code
+                          type: string
+                        detailMessage:
+                          deprecated: true
+                          type: string
+                        message:
+                          description: Error message
+                          type: string
+                        payload:
+                          type: object
+                      required:
+                        - code
+                        - message
+                      type: object
+                    type: array
+                  payload:
+                    description: Response payload
+                    type: object
+                  timestamp:
+                    format: date-time
+                    type: string
+                  trace:
+                    type: string
+                type: object
+          description: Пример ошибочных ответов для всех http-статусов (не 2хх)
+      security:
+        - apiKeyAuth: []
+      summary: Создание склада
+      tags:
+        - Категории
 components:
   securitySchemes:
     apiKeyAuth:
