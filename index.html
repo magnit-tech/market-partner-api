@@ -17,7 +17,11 @@
   			agent: { disabled: true },
 			showDeveloperTools: 'never',
   			telemetry: false,
-            showApiClient: false
+            showApiClient: false,
+            // не даем пользователю отправлять реальные запросы из браузера
+            hideTestRequestButton: true,
+            // убираем кнопку API Client из сайдбара/модалки
+            hideClientButton: true,
 		})
     </script>
     <script src="./js/scalar-ru-patch.js"></script>
