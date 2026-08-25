@@ -166,6 +166,10 @@ paths:
                                   type: string
                               description: |
                                 Дата и время, до которого необходимо собрать товары в посылки и привезти их на точку drop-off
+                            delivery_city:
+                              description: Город доставки
+                              example: Казань
+                              type: string
                             delivery_region:
                               description: Регион доставки
                               example: Республика Татарстан
@@ -246,6 +250,7 @@ paths:
                             - customer_order_number
                             - customer_id
                             - delivery_region
+                            - delivery_city
                             - items
                           type: object
                         type: array
@@ -485,6 +490,10 @@ paths:
                                   type: string
                               description: |
                                 Дата и время, до которого необходимо собрать товары в посылки и привезти их на точку drop-off
+                            delivery_city:
+                              description: Город доставки
+                              example: Казань
+                              type: string
                             delivery_region:
                               description: Регион доставки
                               example: Республика Татарстан
@@ -565,6 +574,7 @@ paths:
                             - customer_order_number
                             - customer_id
                             - delivery_region
+                            - delivery_city
                             - items
                           type: object
                         type: array
@@ -731,6 +741,10 @@ paths:
                             type: string
                         description: |
                           Дата и время, до которого необходимо собрать товары в посылки и привезти их на точку drop-off
+                      delivery_city:
+                        description: Город доставки
+                        example: Казань
+                        type: string
                       delivery_region:
                         description: Регион доставки
                         example: Республика Татарстан
@@ -811,6 +825,7 @@ paths:
                       - customer_order_number
                       - customer_id
                       - delivery_region
+                      - delivery_city
                       - items
                     type: object
                 required:
@@ -1527,7 +1542,7 @@ paths:
                       minItems: 1
                       type: array
                     status:
-                      description: "Статус посылки  \n* NEW                  - Новая\n* READY_TO_SHIPMENT    - Готов к отгрузке\n* AWAITING_DELIVERY    - Передается в доставку\n* DELIVERING           - В пути\n* RECEIVED             - Получен клиентом\n* CANCELED             - Отменен\n"
+                      description: "Статус посылки  \n* NEW                  - Новая\n* READY_TO_SHIPMENT    - Готов к отгрузке\n* AWAITING_DELIVERY    - Передается в доставку\n* DELIVERING           - В пути\n* RECEIVED             - Получен клиентом\n* CANCELED             - Отменен\n* CANCELLING           - Отменяется\n"
                       enum:
                         - NEW
                         - READY_TO_SHIPMENT
@@ -1535,6 +1550,7 @@ paths:
                         - DELIVERING
                         - RECEIVED
                         - CANCELED
+                        - CANCELLING
                       type: string
                     warehouse_id:
                       description: Фильтр по идентификаторам складов.
@@ -1617,7 +1633,7 @@ paths:
                               maxLength: 36
                               type: string
                             status:
-                              description: "Статус посылки  \n* NEW                  - Новая\n* READY_TO_SHIPMENT    - Готов к отгрузке\n* AWAITING_DELIVERY    - Передается в доставку\n* DELIVERING           - В пути\n* RECEIVED             - Получен клиентом\n* CANCELED             - Отменен\n"
+                              description: "Статус посылки  \n* NEW                  - Новая\n* READY_TO_SHIPMENT    - Готов к отгрузке\n* AWAITING_DELIVERY    - Передается в доставку\n* DELIVERING           - В пути\n* RECEIVED             - Получен клиентом\n* CANCELED             - Отменен\n* CANCELLING           - Отменяется\n"
                               enum:
                                 - NEW
                                 - READY_TO_SHIPMENT
@@ -1625,6 +1641,7 @@ paths:
                                 - DELIVERING
                                 - RECEIVED
                                 - CANCELED
+                                - CANCELLING
                               type: string
                             warehouse_id:
                               description: Идентификатор склада
@@ -4090,6 +4107,9 @@ paths:
                         description: Высота в мм
                         format: int32
                         type: integer
+                      hs_code:
+                        description: ТН ВЭД классификатор
+                        type: string
                       instruction:
                         description: 'Инструкция по уходу и применению: конечный URL файла в jpg, png, pdf'
                         type: string
@@ -4226,7 +4246,9 @@ paths:
                       - currency_code
                       - description
                       - height
+                      - hs_code
                       - length
+                      - okpd2
                       - price
                       - product_filters_list
                       - product_images
@@ -5356,6 +5378,12 @@ paths:
                           - weight
                           - width
                         type: object
+                      hs_code:
+                        description: ТН ВЭД классификатор
+                        type: string
+                      okpd2:
+                        description: Общероссийский классификатор продукции
+                        type: string
                       product_attributes:
                         description: Свойства товара (product_attributes)
                         items:
@@ -6207,12 +6235,6 @@ paths:
                   type: string
                 workingDays:
                   description: Рабочие дни склада
-                  example:
-                    - MONDAY
-                    - TUESDAY
-                    - WEDNESDAY
-                    - THURSDAY
-                    - FRIDAY
                   items:
                     enum:
                       - MONDAY
@@ -6322,12 +6344,6 @@ paths:
                     type: string
                   workingDays:
                     description: Рабочие дни склада
-                    example:
-                      - MONDAY
-                      - TUESDAY
-                      - WEDNESDAY
-                      - THURSDAY
-                      - FRIDAY
                     items:
                       enum:
                         - MONDAY
